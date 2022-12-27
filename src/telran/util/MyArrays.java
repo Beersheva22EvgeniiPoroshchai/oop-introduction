@@ -91,27 +91,20 @@ public class MyArrays {
 	
 	
 		public static <T> T[] removeRepeated (T[] array) {
-		int index = 0;
-		int countSameElem = 0;
-		T[] sameElem = Arrays.copyOf(array, countSameElem);
-		while (sameElem.length > 0) {
-			T element = sameElem[0];
-			Predicate <T> predicate = t -> t == element;
-			sameElem = removeIf(sameElem, predicate);
-			countSameElem++;
+		Object helper[] = new Object[array.length];
+		int index [] = {0};
+		return removeIf(array, element -> {
+			boolean res = true;
+			if (!contains(helper, element)) {
+				helper[index[0]++] = element;
+				res  = false;
+			}
+			return res;
+		});
 		}
-		T [] temp = Arrays.copyOf(array, array.length);
-		T [] res = Arrays.copyOf(array, countSameElem);
-		while (temp.length > 0) {
-			T element = temp[0];
-			res[index++] = temp [0];
-			Predicate <T> predicate = t -> t == element;
-			temp = removeIf(temp, predicate);
-		}
-		return res;
+			
 		
-}
-	
+			
 	
 	public static <T> boolean contains (T[] array, T pattern) {
 		for (int i=0; i< array.length; i++) {
