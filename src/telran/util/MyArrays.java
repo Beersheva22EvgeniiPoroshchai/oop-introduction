@@ -60,9 +60,8 @@ public class MyArrays {
 	
 	public static <T> T[] filter (T[] array, Predicate<T> predicate) {
 		
-		int countPredicate = getCountPredicate(array, predicate);
 		
-		T[] res = Arrays.copyOf(array, countPredicate);
+		T[] res = Arrays.copyOf(array, array.length);
 		int index = 0;
 		for (int i = 0; i < array.length; i++) {
 			if (predicate.test(array[i])) {
@@ -70,19 +69,10 @@ public class MyArrays {
 			}
 		}
 		
-			return res;
+			return Arrays.copyOf(res, index);
 	}
 
-	private static <T> int getCountPredicate(T[] array, Predicate<T> predicate) {
-		int res = 0;
-		for (T element: array) {
-			if (predicate.test(element)) {      // oto davar with previous for
-				res++;
-			}
-		}
-		return res;
-	}
-	
+
 	
 	public static <T> T[] removeIf(T[] array, Predicate<T> predicate) {
 	return filter(array, predicate.negate());
@@ -92,7 +82,7 @@ public class MyArrays {
 	
 		public static <T> T[] removeRepeated (T[] array) {
 		Object helper[] = new Object[array.length];
-		int index [] = {0};
+		int index [] = { 0 };
 		return removeIf(array, element -> {
 			boolean res = true;
 			if (!contains(helper, element)) {
@@ -101,10 +91,9 @@ public class MyArrays {
 			}
 			return res;
 		});
-		}
+	}
 			
 		
-			
 	
 	public static <T> boolean contains (T[] array, T pattern) {
 		for (int i=0; i< array.length; i++) {
@@ -116,7 +105,20 @@ public class MyArrays {
 	}
 
 
-}
+	
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
 
 	
 	
