@@ -97,7 +97,7 @@ public class MyArrays {
 	
 	public static <T> boolean contains (T[] array, T pattern) {
 		for (int i=0; i< array.length; i++) {
-			if (array[i] == pattern) {
+			if (array[i].equals(pattern)) {
 				return true;
 			}
 		}
@@ -106,8 +106,26 @@ public class MyArrays {
 
 
 	
+	
+public static <T> String join (T[] array, String delimiter) {
 		
-	}
+		String res = "";
+		if (array.length > 0) {
+		StringBuilder builder = new StringBuilder(array[0].toString());
+		for (int i = 1; i < array.length; i++) {
+		
+		builder.append(delimiter).append(array[i]);
+			}
+		res = builder.toString();
+								
+		}
+		return res;
+	
+}
+		
+	
+
+}
 	
 	
 	
