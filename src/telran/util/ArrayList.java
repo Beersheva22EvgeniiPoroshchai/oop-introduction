@@ -13,7 +13,7 @@ public class ArrayList<T> implements List<T> {
 	private int size;
 	private class ArrayListIterator implements Iterator <T> {
 
-		private int current=0;
+		int current=0;
 		
 		
 		@Override
@@ -73,16 +73,19 @@ public class ArrayList<T> implements List<T> {
 	
 	@Override
 	public boolean removeIf(Predicate<T> predicate) {
-	//FIXME - write implementation of O[N].
-		// Hint working with only indexes
-		
+	
 		int oldSize = size;
-		for (int i = size - 1; i >= 0; i--) {
+		int targInd = 0;
+		for (int i = 0; i < oldSize; i++) {
 			if (predicate.test(array[i])) {
-				remove(i);
+				size--;
 				
 			}
+			else {
+				array[targInd++] = array[i];
+			}
 		}
+		Arrays.fill(array, size, oldSize, null);
 		
 		return oldSize > size;
 	}
