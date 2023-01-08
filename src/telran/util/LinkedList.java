@@ -10,7 +10,7 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 		T obj;
 		Node<T> prev;
 		Node<T> next;
-
+		
 		Node(T obj) {
 			this.obj = obj;
 		}
@@ -19,9 +19,9 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 	private Node<T> head;
 	private Node<T> tail;
 
-
 	private class LinkedListIterator implements Iterator<T> {
 		Node<T> current = head;
+		boolean flNext = false;
 
 		@Override
 		public boolean hasNext() {
@@ -36,11 +36,23 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 			}
 			T res = current.obj;
 			current = current.next;
+			flNext = true;
 			return res;
 		}
 
-	}
-
+		@Override
+		public void remove() {
+			if (!flNext) {
+				throw new IllegalStateException();
+				}
+			Node <T> removedNode = current == null ? tail : current.prev;
+			removeNode(removedNode);
+			flNext = false;
+				
+			}
+		}
+		
+	
 	@Override
 	public boolean add(T element) {
 		Node<T> node = new Node<>(element);
@@ -55,38 +67,20 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 		size++;
 		return true;
 	}
-
 	
-	@Override
-
-	public boolean removeIf(Predicate<T> predicate) {
-		Node<T> current = head;
-		int oldSize = size;
-		while (current != null) {
-			if (predicate.test(current.obj)) {
-				removeNode(current);
-			}
-			current = current.next;
-		
-		}
-		return oldSize > size;
-
-	}
-
+	
+	
 	private void removeNode(Node<T> current) {
 		if (current == head) {
 			removeHead();
-			}
-		else if (current == tail) {
+		} else if (current == tail) {
 			removeTail();
-		}
-		else {
+		} else {
 			removeMiddle(current);
-			
+
 		}
 		size--;
-		}
-
+	}
 
 	private void removeMiddle(Node<T> current) {
 		Node<T> prev = current.prev;
@@ -95,42 +89,24 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 		next.prev = prev;
 	}
 
-
 	private void removeTail() {
 		Node<T> prev = tail.prev;
 		prev.next = null;
 		tail = prev;
-		
-	}
 
+	}
 
 	private void removeHead() {
 		if (head.next == null) {
 			head = tail = null;
-			} else {
-				Node <T> next = head.next;
-				next.prev = null;
-				head = next;
-			}
-		
+		} else {
+			Node<T> next = head.next;
+			next.prev = null;
+			head = next;
+		}
+
 	}
 
-
-	
-
-	@Override
-	public T[] toArray(T[] ar) {
-		if (ar.length < size) {
-			ar = Arrays.copyOf(ar, size);
-		}
-		Node<T> current = head;
-		for (int i = 0; i < size; i++) {
-			ar[i] = current.obj;
-			current = current.next;
-		}
-		Arrays.fill(ar, size, ar.length, null);
-		return ar;
-	}
 
 	@Override
 	public Iterator<T> iterator() {
@@ -161,7 +137,36 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 		node.next = nodeIndex;
 		size++;
 	}
-
+	
+	// 
+	public void setNext(int index1, int index2) {
+		if (index1 < index2) {
+			throw new IllegalArgumentException();
+				}
+		Node<T> first = getNode(index1);
+		Node<T> second = getNode(index2);
+		first.next = second;
+	}
+	
+	
+	public boolean hasLoop() {
+		Node<T> walker;
+		Node<T> runner;
+		walker=runner=head;
+		
+		while(runner != null && walker.next != null && runner.next != null) {
+			runner = runner.next.next;
+			walker = walker.next;
+			if (walker == runner) {
+				return true;
+			}
+		}
+		return false;	
+	
+	}
+		
+		
+		
 	private Node<T> getNode(int index) {
 
 		return index < size / 2 ? getNodeFromLeft(index) : getNodeFromRight(index);
@@ -201,10 +206,9 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 		}
 		removeNode(removedNode);
 		return removedNode.obj;
-		
+
 	}
 
-	
 	@Override
 	public int indexOf(T pattern) {
 		int index = 0;
