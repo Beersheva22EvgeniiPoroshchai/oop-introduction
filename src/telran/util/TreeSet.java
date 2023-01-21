@@ -126,34 +126,72 @@ public TreeSet() {
 		
 		return new TreeSetIterator();
 	}
+	
+	
 	@Override
 	public T floor(T element) {
-		// TODO Auto-generated method stub
-		return null;
+		T res = null;
+		Node<T> node = getNode(element);
+		if (comp.compare(element, node.obj) != 0) {
+			if (comp.compare(element, node.obj) < 0) {
+					node = getYoungerPar(node);
+						}		
+				}
+				
+		if (node != null) {
+		res = node.obj;
+	} 
+
+		return res;
 	}
+	
+	
+	
+	private Node<T> getYoungerPar(Node<T> node) {
+		Node <T> res = null;
+			if (node.parent.right != node && node.parent != null) {
+			node = node.parent;
+			res = node.parent;
+			
+		}
+		return res;
+	}
+	
+	
+	
+	
+	
 	@Override
 	public T ceiling(T element) {
-		// TODO Auto-generated method stub
-		return null;
+		T res = null;
+		Node<T> node = getNode(element);
+		if (comp.compare(element, node.obj) != 0) {
+			if (comp.compare(element, node.obj) > 0) {
+				node = getGreaterParent(node); 
+				}
+		}
+		if (node != null) {
+			res = node.obj;
+		} 
+
+		return res;
 	}
+ 		
+	
 	@Override
 	public T first() {
-	
 	return getLeastNode(root).obj;
 	}
+	
+	
 	@Override
 	public T last() {
-	
 	Node<T> current = root;
-	while (current.right != null) {
-	current = current.right;
-	}
+	while (current.right != null) 
+	current = current.right;		
 		return current.obj;
 	}
 
 	
 	
-	
-	
-
 }
