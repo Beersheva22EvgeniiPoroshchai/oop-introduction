@@ -154,7 +154,7 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 		Node<T> runner;
 		walker=runner=head;
 		
-		while(runner != null && walker.next != null && runner.next != null) {
+		while(runner != null  && runner.next != null) {
 			runner = runner.next.next;
 			walker = walker.next;
 			if (walker == runner) {
