@@ -18,6 +18,9 @@ public class TreeSet<T> extends AbstractCollection<T> implements Sorted<T> {
 
 	private class TreeSetIterator implements Iterator<T> {
 		Node<T> current = root;
+		Node<T> prev;
+		boolean flRemove = false;
+		
 
 		TreeSetIterator() {
 			if (current != null) {
@@ -36,11 +39,27 @@ public class TreeSet<T> extends AbstractCollection<T> implements Sorted<T> {
 			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
+			flRemove = true;
 			T res = current.obj;
+			prev = current;
 			current = getNextCurrent(current);
 			return res;
 		}
-
+		
+		@Override
+		public void remove() {
+			if(!flRemove) {
+				throw new IllegalStateException();
+			}
+			flRemove = false;
+			if(isJunction(prev)) {
+				current = prev;
+				
+			}
+			removeNode(prev);
+			
+			}
+		
 	}
 
 	private Node<T> root;
@@ -114,62 +133,56 @@ public class TreeSet<T> extends AbstractCollection<T> implements Sorted<T> {
 	public boolean remove(T pattern) {
 		boolean res = false;
 		Node<T> removed = getNode(pattern);
-		if (removed != null && comp.compare(removed.obj, pattern) == 0) {
-				if (removed.left != null && removed.right != null) {
-				Node<T> youngNode = getLeastNode(removed.right);
-				removed.obj = youngNode.obj;
-				res = true;
-				Node<T> young = youngNode.left;
-				if (young == null) {
-					young = youngNode.right;
-				} else {
-					young = youngNode.left;
-				}
-				Node<T> elder = youngNode.parent;
-				if (elder == null) {
-					root = young;
-				} else {
-					if (elder.left == youngNode) {
-						elder.left = young;
-
-					} else {
-						elder.right = young;
-					}
-				}
-				if (young != null) {
-					young.parent = elder;
-				}
-			} else {
-				Node<T> supYoung = removed.left;
-				if (supYoung == null) {
-					supYoung = removed.right;
-				} else {
-					supYoung = removed.left;
-				}
-				Node<T> supElder = removed.parent;
-				if (supElder == null) {
-					root = supYoung;
-				} else {
-					if (supElder.left == removed) {
-						supElder.left = supYoung;
-
-					} else {
-						supElder.right = supYoung;
-					}
-				}
-				if (supYoung != null) {
-					supYoung.parent = supElder;
-				}
-			}
-			size--;
-
+		if (removed != null && comp.compare(pattern, removed.obj) == 0) {
+			res = true;
+			removeNode(removed);
 		}
-
 		return res;
 	}
+			
+			
+			
+	private void removeNode(Node<T> removed) {
+		if(isJunction(removed)) {
+			removeNodeJunction(removed);
+			
+		} else {
+			removeNodeNonJunction(removed);
+		}
+		size--;
+	}
+	
+		private void removeNodeNonJunction(Node<T> removed) {
+		Node<T> parent = removed.parent;
+		Node<T> child = removed.left == null ? removed.right : removed.left;
+		if (parent == null) {
+			root = child;
+		} else {
+			if (parent.left == removed) {
+				parent.left = child;
+			} else {
+				parent.right = child;
+			}
+		}
+		if (child != null) {
+			child.parent = parent;
+		}
+		
+	}
 
+		private void removeNodeJunction(Node<T> removed) {
+		Node<T> substitution = getLeastNode(removed.right);
+		removed.obj = substitution.obj;
+		removeNodeNonJunction(substitution);
+		
+	}
 
+		private boolean isJunction(Node<T> removed) {
+		return removed.left != null && removed.right != null;
+	}
 
+		
+	
 	@Override
 	public boolean contains(T pattern) {
 		Node<T> node = getNode(pattern);
@@ -184,50 +197,38 @@ public class TreeSet<T> extends AbstractCollection<T> implements Sorted<T> {
 
 	@Override
 	public T floor(T element) {
-		T res = null;
-		Node<T> node = getNode(element);
-		if (comp.compare(element, node.obj) != 0) {
-			if (comp.compare(element, node.obj) < 0) {
-				node = getYoungerPar(node);
-			}
-		}
-
-		if (node != null) {
-			res = node.obj;
-		}
-
-		return res;
+		
+		return floorCeiling(element, true);
 	}
 
-	private Node<T> getYoungerPar(Node<T> node) {
-		Node<T> res = null;
-		if (node.parent.right != node && node.parent != null) {
-			node = node.parent;
-			res = node.parent;
-
-		}
-		return res;
-	}
-
+	
 	@Override
 	public T ceiling(T element) {
+		return floorCeiling(element, false);
+	}
+		
+		
+	private T floorCeiling(T element, boolean isFloor) {
 		T res = null;
-		Node<T> node = getNode(element);
-		if (comp.compare(element, node.obj) != 0) {
-			if (comp.compare(element, node.obj) > 0) {
-				node = getGreaterParent(node);
+		int compRes = 0;
+		Node<T> current = root;
+		while (current != null && (compRes = comp.compare(element, current.obj)) != 0) {
+			if ((compRes < 0 && !isFloor) || (compRes > 0 && isFloor)) {
+				res = current.obj; 
 			}
+			current = compRes < 0 ? current.left : current.right; 
 		}
-		if (node != null) {
-			res = node.obj;
-		}
-
-		return res;
+		return current == null ? res : current.obj;
 	}
 
+	
 	@Override
 	public T first() {
-		return getLeastNode(root).obj;
+		T res = null;
+		if (root != null) {
+			res = getLeastNode(root).obj;
+		}
+		return res; 
 	}
 
 	@Override
