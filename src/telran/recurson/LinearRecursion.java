@@ -52,11 +52,15 @@ public class LinearRecursion {
 	}
 
 	private static int multiply(int a, int b) {
-		if (b > 0) {
-			return (a + multiply(a, b - 1));
-		} else {
-			return 0;
+		int res = 0;
+		if (b < 0) {
+			res =  multiply(-a, -b);
+			
+		} if (b > 0) {
+			res = a + multiply (a, b -1);
+			
 		}
+		return res;
 
 	}
 
@@ -109,6 +113,8 @@ public class LinearRecursion {
 		long res = 0;
 		if (x < 0) {
 			throw new IllegalArgumentException();
+		} else if (x == 0) {
+			res = 0;
 		} else if (x > 0) {
 			res = square(x - 1) + (x + x - 1);
 		}

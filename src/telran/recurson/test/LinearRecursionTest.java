@@ -47,6 +47,9 @@ public class LinearRecursionTest {
 		assertThrowsExactly(IllegalArgumentException.class, ()-> newPower (1000, -1));
 		assertEquals(1, newPower(1000, 0));
 		assertEquals(-1000, power(-10, 3));
+
+		
+	
 		}
 	
 	
@@ -66,6 +69,9 @@ public class LinearRecursionTest {
 		assertEquals(25, square(5));
 		assertEquals(81, square(9));
 		assertEquals(1, square(1));
+		assertEquals(0, square(0));
+		assertThrowsExactly(IllegalArgumentException.class, () -> square(-5));
+		
 	}
 	
 	
