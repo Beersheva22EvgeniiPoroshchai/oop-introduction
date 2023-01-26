@@ -14,6 +14,7 @@ import telran.util.TreeSet;
 
 class TreeSetTest extends SetTest {
 
+	TreeSet<Integer> tree;
 	TreeSet <Integer> treeSet;
 	@BeforeEach
 	@Override 
@@ -21,8 +22,41 @@ class TreeSetTest extends SetTest {
 	void setUp() throws Exception {
 		collection = new TreeSet<>();
 		super.setUp();
+		
+		tree = (TreeSet<Integer>) collection;
 		treeSet = (TreeSet<Integer>) collection;
 	}
+	
+	@Test
+	void displayRotatedTest() {
+		tree.displayTreeRotated();
+	}
+	
+	@Test
+	void heightTreeSet() {
+		assertEquals(4, tree.height());
+	}
+	
+	@Test
+	void widthTreeSet() {
+		assertEquals(4, tree.width());
+	}
+	
+	
+	@Test
+	void inversionTest() {
+	tree.inversion();
+	Integer expected[] = {280, 134, 120, 100, 15, 10, -5};
+	Integer actual[] = new Integer[expected.length];
+	int index = 0;
+	for (Integer num: tree) {
+		actual[index++] = num;
+	}
+	assertArrayEquals(expected, actual);
+	assertTrue(tree.contains(280));
+		
+	}
+	
 	
 	
 	@Test
