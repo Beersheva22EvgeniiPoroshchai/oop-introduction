@@ -64,37 +64,28 @@ public class LinearRecursion {
 
 	}
 
-	public static boolean isSubstring(String string, String substr, int strInd, int substrInd) {
+	public static boolean isSubstring(String string, String substr) {
 		boolean res = false;
-		if (strInd == string.length()) {
-			return res;
+		
+		if (string.length() >= substr.length()) {
+			res = isEqual(string, substr) ? true : isSubstring(string.substring(1), substr);
 		}
-		if (string.charAt(strInd) == substr.charAt(substrInd)) {
-			if (exMatch(string, substr, strInd + 1, substrInd + 1)) {
-				return true;
-			}
-		}
-
-		res = isSubstring(string, substr, strInd + 1, substrInd);
+		
 		return res;
 	}
 
-	private static boolean exMatch(String string, String substr, int strInd, int substrInd) {
+	private static boolean isEqual(String string, String substr) {
 		boolean res = false;
-		if (strInd == string.length() && substrInd != substr.length()) {
-			res = false;
+		if (substr.length() == 0) {
+			res = true;
+		} else if (string.charAt(0) == substr.charAt(0)) {
+			res = isEqual(string.substring(1), substr.substring(1));
 		}
-		if (substrInd == substr.length()) {
-			return true;
-		}
-
-		if (substr.charAt(substrInd) == string.charAt(strInd)) {
-			res = exMatch(string, substr, strInd + 1, substrInd + 1);
-		}
-
 		return res;
 	}
 
+	
+	
 	public static long sum(int ar[]) {
 		return sum(0, ar);
 	}
