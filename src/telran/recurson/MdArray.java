@@ -6,7 +6,6 @@ import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
 public class MdArray<T> {
-	private int[] dimnsn;
 	private MdArray<T>[] array;
 	private T value;
 	public MdArray(int dimensions[], T value) {
@@ -17,7 +16,6 @@ public class MdArray<T> {
 	
 	@SuppressWarnings("unchecked")
 	public MdArray(int[] dimensions, int firstDim, T value) {
-		dimnsn = dimensions;
 		if (firstDim == dimensions.length) {
 			this.value = value;
 			array = null;
@@ -33,54 +31,50 @@ public class MdArray<T> {
 	
 	
 	public void forEach (Consumer<T> consumer) {
-		for (MdArray<T> ar: array) {
-			if (ar.array == null) {
-			consumer.accept(ar.value);
+			if (array == null) {
+		consumer.accept(value);
 			} else {
-			ar.forEach(consumer);
+				for (MdArray<T> mdArray: array) {
+					mdArray.forEach(consumer);
+				}
 			}
-		}
 	}
-	
-	
-	
-	public T[] toArray(T[] ar) {
-		
-		List<T> list = new ArrayList<>();
-		this.forEach(numb -> list.add(numb));
+		 		
+		public T[] toArray(T[] ar) {
+		final List<T> list = new ArrayList<>();
+		forEach(list :: add);
 		return list.toArray(ar); 
 		
 		
 	}
 	
-	public T getValue (int[] ind) {
-		return findMdArray(ind).value;
+	public T getValue (int[] indexes) {
+		MdArray<T> res = getScalar(indexes);
+		return res.value;
 	}
 
-	private MdArray<T> findMdArray(int[] ind) {
-		checkInd(ind);
-		MdArray<T> tmp = this;
-		int i = 0;
-		while (tmp.value == null) {
-			if (dimnsn[i] < ind [i]) 
-				throw new IndexOutOfBoundsException();
-			tmp = tmp.array[ind[i++]];
-		}
-		return tmp;
+		public void setValue (int[] indexes, T value) {
+		MdArray<T> res = getScalar(indexes);
+		res.value = value;
 	}
-	
-	
-	private void checkInd (int[] ind) {
-		if (dimnsn.length > ind.length) 
-			throw new IllegalStateException();
-		if (dimnsn.length < ind.length) 
+
+
+	private MdArray<T> getScalar(int[] indexes) {
+		MdArray<T> res = this;
+		try {
+			for (int index: indexes) {
+				res = res.array[index];
+			}
+		} catch (NullPointerException e) {
 			throw new NoSuchElementException();
+			
 		}
-	
-	
-	public void setValue (int[] ind, T setVal) {
-		findMdArray(ind).value = setVal;
+		if (res.array != null) {
+			throw new IllegalStateException();
+		}
+		return res;
 	}
-	
-	
 }
+	
+	
+

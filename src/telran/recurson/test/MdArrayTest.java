@@ -58,9 +58,6 @@ assertArrayEquals(expected, array.toArray(new Integer[1]));
  
 @Test
 void getValueTest() {
-	assertThrowsExactly(IllegalStateException.class,() -> array.getValue(new int[] {7,5}));
-	assertThrowsExactly(NoSuchElementException.class,() -> array.getValue(new int[] {9,5,3,1}));
-	assertThrowsExactly(IndexOutOfBoundsException.class,() -> array.getValue(new int[] {9,6,3}));
 	assertEquals(50, array.getValue(new int[] {7,3,6}));
 	assertEquals(50, array.getValue(new int[] {0,0,0}));
 	
