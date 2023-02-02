@@ -1,5 +1,5 @@
 package telran.util;
-import java.lang.reflect.Array;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
@@ -57,18 +57,18 @@ public interface Collection <T> extends Iterable <T>{
 
 	
 	default T[] toArrayShuffling(T[] array) {
-		T[] res = array;
-		ArrayList <Integer> ind = new ArrayList<>();
-		new Random().ints(0,array.length).distinct().limit(array.length).forEach(ind::add);
-			for (int i = 0; i < array.length; i++) {
-			T temp = res[i];
-			res[i] = res[ind.get(i)];
-			res[ind.get(i)] = temp;	
-		}
-		return res;	
+		T[] ar1 = toArray(array);
+		T[] res = Arrays.copyOf(ar1, ar1.length);
+		int[] index = {0};
+		new Random().ints(0, res.length).distinct().limit(res.length).forEach(i -> res[index[0]++] = ar1[i]);
+		
+		return res;
 	}
+}		
+		
+		
 
 	
-	}
+	
 
 
