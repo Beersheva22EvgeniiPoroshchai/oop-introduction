@@ -140,9 +140,6 @@ public class HashSet<T> extends AbstractCollection<T> implements Set<T> {
 		return res;
 	}
 
-	
-
-	
 
 	@Override
 	public boolean contains(T pattern) {
@@ -159,6 +156,23 @@ public class HashSet<T> extends AbstractCollection<T> implements Set<T> {
 		
 		return new HashSetIterator();
 	}
+	
+	@Override
+	public T get(T pattern) {
+		T res = null;
+		List<T> list = hashTable[getHashIndex(pattern)];
+		if (list != null) {
+			T obj = null;
+			Iterator<T> it = list.iterator();
+			while(it.hasNext() && !isEqual((obj = it.next()), pattern)) {}
+			if (isEqual(obj, pattern)) {
+				res = obj;
+			}
+		}
+		return res;
+	}
+	
+	
 	
 
 }

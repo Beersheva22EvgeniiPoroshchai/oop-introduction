@@ -295,17 +295,18 @@ public class TreeSet<T> extends AbstractCollection<T> implements Sorted<T> {
 		return res;
 	}
 		
+	
 		
 	public void inversion() {
-		inversion (root, 0);
+		inversion (root);
 		comp = comp.reversed();		
 	}
 
-	private void inversion(Node<T> current, int level) {
+	private void inversion(Node<T> current) {
 		if (current != null) {
 			swap (current);
-			inversion(current.left, level + 1);
-			inversion(current.right, level + 1);
+			inversion(current.left);
+			inversion(current.right);
 		}
 
 		
@@ -319,5 +320,58 @@ public class TreeSet<T> extends AbstractCollection<T> implements Sorted<T> {
 		current.right = tmp;
 		
 	}
+
+	public void balance() {
+		Node<T>[] array = getNodesArray();
+		root = balance(array, 0, array.length - 1, null);
+	}
+
 	
+	private Node<T> balance(Node<T>[] array, int left, int right, Node<T> parent) {
+		Node<T> root = null;
+			if (left <= right) {
+			final int rootIndex = (left + right) / 2;
+			root = array[rootIndex];
+			root.parent = parent;
+			root.left = balance(array, left, rootIndex - 1, root);
+			root.right = balance(array, rootIndex + 1, right, root); 
+		}
+		return root;
+	}
+
+	
+	
+	private Node<T>[] getNodesArray() {
+		@SuppressWarnings("unchecked")
+		Node<T> res[] = new Node[size];
+		int index = 0;
+		if (root != null) {
+			Node<T> current = getLeastNode(root);
+			while (current != null) {
+				res[index++] = current;
+				current = getNextCurrent(current);
+			} 
+		}
+		return res;
+	}
+
+	@Override
+	public T get(T pattern) {
+		T res = null;
+		Iterator <T> it = iterator();
+		T obj = null;
+		while (it.hasNext() && !isEqual(pattern, obj = it.next())) {}
+		if (isEqual(pattern, obj)) {
+			res = obj;
+		}
+		return res;
+	}
+	
+
+
+
+
+
+
+
 }
