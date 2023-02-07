@@ -19,36 +19,11 @@ public abstract class AbstractMap<K, V> implements Map<K, V> {
 	}
 
 	@Override
-	public V putIfAbsent(K key, V value) {
-		V res = null;
-		Entry<K, V> entry = set.get(new Entry<>(key, null));
-		if (entry != null) {
-			res = entry.getValue();
-		} else {
-			set.add(new Entry<>(key, value));
-			res = null;
-		}
-		return res;
-	}
-
-	@Override
 	public V get(K key) {
 		V res = null;
 		Entry<K, V> entry = set.get(new Entry<>(key, null));
 		if(entry != null){
 			res = entry.getValue();
-		}
-		return res;
-	}
-
-	@Override
-	public V getOrDefault(K key, V value) {
-		V res = null;
-		Entry<K, V> entry = set.get(new Entry<>(key, null));
-		if(entry != null){
-			res = entry.getValue();
-		} else {
-			res = value;
 		}
 		return res;
 	}
@@ -61,21 +36,15 @@ public abstract class AbstractMap<K, V> implements Map<K, V> {
 
 	@Override
 	public boolean containsValue(V value) {
-		boolean res = false;
-		Iterator <Entry<K, V>> it = set.iterator();
-		while (it.hasNext()) {
-			if (it.next().getValue().equals(value)) {
-				res = true;
-			}
-		}
-		return res;
+		return set.stream().anyMatch(e -> e.getValue().equals(value));
 	}
 	
 	@Override
 	public Collection<V> values() {
-		Collection <V> collect = new LinkedList<>();
-		set.stream().forEach(col -> collect.add(col.getValue()));
-		return collect;
+		ArrayList<V> res = new ArrayList<>();
+		set.forEach(e -> res.add(e.getValue()));
+		return res;
+		
 	}
 
 	@SuppressWarnings("unchecked")
@@ -83,7 +52,7 @@ public abstract class AbstractMap<K, V> implements Map<K, V> {
 	public Set<K> keySet() {
 		try {
 			Set<K> res = set.getClass().getConstructor().newInstance();
-			set.forEach(set -> res.add(set.getKey()));
+			set.forEach(e -> res.add(e.getKey()));
 			return res;
 		} catch (Exception e) {
 			throw new IllegalStateException();
@@ -97,21 +66,19 @@ public abstract class AbstractMap<K, V> implements Map<K, V> {
 	public Set<Entry<K, V>> entrySet() {
 		try {
 			Set<Entry<K, V>> res = set.getClass().getConstructor().newInstance();
-			set.forEach(set -> res.add(set));
+			set.forEach(res:: add);
 			return res;
 		} catch (Exception e) {
 			throw new IllegalStateException();
-		
 		}
 	}
 
 	@Override
 	public V remove(K key) {
-		V res = null;
-		Entry<K, V> valForRemove = set.get(new Entry<> (key, null));
-		if (valForRemove != null) {
-			set.remove(valForRemove);
-			res = valForRemove.getValue();
+		V res = get(key);
+		if (res != null) {
+			set.remove(new Entry<> (key, null));
+			
 		}
 	return res;
 	}

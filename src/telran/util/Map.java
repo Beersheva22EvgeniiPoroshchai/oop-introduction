@@ -4,6 +4,8 @@ import java.util.Objects;
 
 import com.sun.jdi.Value;
 
+import telran.util.Map.Entry;
+
 public interface Map<K, V> {
 	class Entry<K, V> implements Comparable <Entry <K, V>> {
 	public V getValue() {
@@ -57,16 +59,14 @@ public interface Map<K, V> {
 	 */
 	V put (K key, V value); 
 	
-	/***************************************/
-	/**
-	 * 
-	 * @param key
-	 * @param value
-	 * adds new entry if entry doesn't exist 
-	 * @return null if entry is added
-	 * @return reference to value if entry exist
-	 */
-	V putIfAbsent (K key, V value);
+
+	default public V putIfAbsent(K key, V value) {
+		V res =  get(key);
+		if (res == null) {
+			put(key, value);
+		} 
+		return res;
+}
 	
 	/**************************************/
 	/**
@@ -77,15 +77,14 @@ public interface Map<K, V> {
 	V get(K key);
 	//return value == null ? null : value;
 	
-	/*****************************************/
-	/**
-	 * 
-	 * @param key
-	 * @param value
-	 * @return value matching a given key or the given value (second parameter)
-	 * if no entry with the key
-	 */
-	V getOrDefault(K key, V value);
+	
+	default public V getOrDefault(K key, V value) {
+		V res = get(key);
+		if (res == null) {
+			res = value;
+		}
+		return res;
+	}
 	
 	
 	/*****************************************8/
