@@ -4,16 +4,19 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import telran.util.*;
 
-public abstract class CollectionTest {
+abstract class CollectionTest {
 	protected Integer [] numbers = {10, 100, -5, 134, 280, 120, 15};
 	protected Integer ar[] = new Integer[numbers.length + 100];
 	protected Collection<Integer> collection;
@@ -27,14 +30,32 @@ public abstract class CollectionTest {
 	}
 
 	abstract void testAdd();
-	abstract void testIterator();
+	
+
+	@Test
+	void testIterator() {
+		Integer[] act = new Integer[numbers.length];
+		int i = 0;
+		Iterator<Integer> it = collection.iterator();
+		
+		while(it.hasNext()) {
+			act[i++] = it.next();
+		}
+		assertArrayEquals(numbers, act);
+		
+		
+		}
+	
 	
 
 	@Test
 	void testRemove() {
 		Integer [] expected = {10, 100, -5,  280, 120, 15};
 		assertTrue(collection.remove((Integer)134));
-		assertArrayEquals(expected, collection.toArray(empty));
+		Arrays.sort(expected);
+		Integer [] actual = collection.toArray(empty);
+		Arrays.sort(actual);
+		assertArrayEquals(expected, actual);
 		assertFalse(collection.remove((Integer)134));
 	}
 
@@ -67,18 +88,54 @@ public abstract class CollectionTest {
 		assertFalse(collection.contains(Integer.MIN_VALUE));
 	}
 
-	@Test 
+	@Test
 	void testToArray() {
 		
 		Arrays.fill(ar, 10);
 		assertTrue(ar == collection.toArray(ar));
-		for(int i = 0; i < numbers.length; i++) {
-			assertEquals(ar[i], numbers[i]);
+		Arrays.sort(ar,0, collection.size());
+		Integer expected[] = Arrays.copyOf(numbers, numbers.length);
+		Arrays.sort(expected);
+		for(int i = 0; i < expected.length; i++) {
+			assertEquals(ar[i], expected[i]);
 		}
-		for(int i = numbers.length; i < ar.length; i++) {
+		for(int i = expected.length; i < ar.length; i++) {
 			assertNull(ar[i]);
 		}
 		
 	}
+	@Test
+	void removeIteratorTest() {
+		final Iterator <Integer> it = collection.iterator();
+		assertThrowsExactly(IllegalStateException.class, ()->it.remove());
+		Integer num = it.next();
+		assertTrue(collection.contains(num));
+		it.remove();
+		assertFalse(collection.contains(num));
+		
+		assertThrowsExactly(IllegalStateException.class, ()->it.remove());
+		Iterator<Integer> it1 = collection.iterator();
+		
+		while(it1.hasNext()) {
+			num = it1.next();
+		}
+		assertTrue(collection.contains(num));
+		it1.remove();
+		assertFalse(collection.contains(num));
+		
+		
+	}
+	@Test
+	void nextExceptionIteratorTest() {
+		Iterator <Integer> it = collection.iterator();
+		while(it.hasNext()) {
+			it.next();
+		}
+		assertThrowsExactly(NoSuchElementException.class, () -> it.next());
+	}
 
+
+	
+	
+	
 }
