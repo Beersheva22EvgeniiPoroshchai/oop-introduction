@@ -1,72 +1,45 @@
 package telran.util;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
+import telran.util.LinkedList.Node;
+
 
 public class LinkedHashSet<T> extends AbstractCollection<T> implements Set<T> {
 
-	private HashMap <Integer, Value<T>> map;
-
-	private Value<T> prev;
-	private Value<T> head;
-	
-	public LinkedHashSet() {
-		map = new HashMap<Integer, Value <T>>();
-		
-}
-	private static class Value<T> {
-		
-		Integer firstHash;
-		Integer secHash;
-		T obj;
-		
-		Value (T obj) {
-			this.obj = obj;
-		}
-	}
+	private LinkedList<T> list = new LinkedList<>();
+	private HashMap <T, Node<T>> map = new HashMap<>();
 	
 	private class LinkedHashSetIterator implements Iterator<T> {
-
-		Value<T> cur = head;
-		boolean flag = false;
-		int count = 0;
-		
+		Iterator<T> listIterator = list.iterator();
+		T currentObj = null;
 		
 		@Override
 		public boolean hasNext() {
-			return count < size;
+			return listIterator.hasNext();
 		}
 
 		@Override
 		public T next() {
-			Value<T> val;
-			if(!hasNext()) {
-				throw new NoSuchElementException();
-			}
-			if(count != 0) {
-				val = map.get(cur.secHash);
-			} else {
-				val = cur;
-				}
-			cur = val;
-			count++;
-			return val.obj;
+			currentObj = listIterator.next();
+			return currentObj;
+		}
+		
+		@Override
+		public void remove() {
+			listIterator.remove();
+			map.remove(currentObj);
+			size--;
 		}
 	}
-	
 	
 	@Override
 	public boolean add(T element) {
 		boolean res = false;
-		Value<T> newVal = new Value<T>(element);
-		if (map.putIfAbsent(element.hashCode(), newVal) == null) {
-			if (prev != null) {
-				newVal.firstHash = prev.obj.hashCode();
-				prev.secHash = element.hashCode();
-			} else head = newVal;
-			prev = newVal;
-			size++;
+		if (!map.containsKey(element)) {
 			res = true;
+			list.add(element);
+			map.put(element, list.tail);
+			size++;
 				}
 		return res;
 	}
@@ -74,22 +47,20 @@ public class LinkedHashSet<T> extends AbstractCollection<T> implements Set<T> {
 	@Override
 	public boolean remove(T pattern) {
 		boolean res = false;
-		Integer patHash = pattern.hashCode();
-		Value<T> oldVal = map.get(patHash);
-		if (oldVal != null) {
-			map.get(oldVal.firstHash).secHash = oldVal.secHash;
-			map.get(oldVal.secHash).firstHash = oldVal.firstHash;
-			if (map.remove(patHash) != null) {
-				res = true;
-				size--;
+		Node<T> node = map.get(pattern);
+		if (node != null) {
+			res = true;
+			list.removeNode(node);
+			map.remove(pattern);
+			size--;
 			}
-		}
+		
 		return res;
 	}
 
 	@Override
 	public boolean contains(T pattern) {
-		return map.containsKey(pattern.hashCode());
+		return map.containsKey(pattern);
 	}
 
 	@Override
@@ -99,7 +70,8 @@ public class LinkedHashSet<T> extends AbstractCollection<T> implements Set<T> {
 
 	@Override
 	public T get(T pattern) {
-		return map.get(pattern.hashCode()).obj;
+		Node<T> node = map.get(pattern);
+		return node == null ? null : node.obj;
 	}
 
 }
